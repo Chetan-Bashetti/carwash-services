@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const getUserName = require('../utils/getUserName');
 
 const getServices = asyncHandler(async (req, res) => {
-	let services = await Service.find();
+	let services = await Service.find().sort({ createdAt: -1 });
 	let user = await User.find();
 	let updatedService = getUserName(services, user);
 	if (updatedService) {
@@ -29,22 +29,29 @@ const createService = asyncHandler(async (req, res) => {
 	let isValidUser = await User.findById(req.body.user_id);
 	if (req.body.user_id) {
 		if (isValidUser) {
-			if (!ownerName || !carNumber || !selectedServices || !phone) {
+			if (!ownerName || !carNumber || !selectedServices) {
 				res.status(400);
 				throw new Error('Please fill all the fields');
-			} else {
-				const service = new Service({
-					user_id,
-					ownerName,
-					carNumber,
-					selectedServices,
-					phone,
-					serviceStatus
-				});
-				await service.save();
-				res.status(200);
-				res.json({ message: 'Service created successfully' });
 			}
+			if (ownerName.length < 2) {
+				res.status(400);
+				throw new Error('User name should atleast contain 2 charecters');
+			}
+			if (carNumber.trim().length < 10) {
+				res.status(400);
+				throw new Error('Car number should atleast contain 10 charecters');
+			}
+			const service = new Service({
+				user_id,
+				ownerName,
+				carNumber,
+				selectedServices,
+				phone,
+				serviceStatus
+			});
+			await service.save();
+			res.status(200);
+			res.json({ message: 'Service created successfully' });
 		} else {
 			res.status(404);
 			throw new Error('Invalid user. Action not permitted');
@@ -66,11 +73,11 @@ const updateService = asyncHandler(async (req, res) => {
 				service.selectedServices =
 					req.body.selectedServices || service.selectedServices;
 				service.phone = req.body.phone || service.phone;
-				service.phone = req.body.serviceStatus || service.serviceStatus;
+				service.serviceStatus = req.body.serviceStatus || service.serviceStatus;
 
 				let updatedService = await service.save();
 				res.status(200);
-				res.send('Service updated successfully');
+				res.send({ message: 'Service updated successfully' });
 			} else {
 				res.status(404);
 				throw new Error('Invalid user. Action not permitted');
@@ -93,7 +100,7 @@ const deleteService = asyncHandler(async (req, res) => {
 			if (isValidUser && isValidUser?.isAdmin) {
 				let deletedService = await service.remove();
 				res.status(200);
-				res.send('Service deleted successfully');
+				res.send({ message: 'Service deleted successfully' });
 			} else {
 				res.status(404);
 				throw new Error('Invalid user, Action not permitted');

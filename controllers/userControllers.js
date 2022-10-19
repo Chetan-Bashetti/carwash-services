@@ -27,6 +27,11 @@ const addUser = asyncHandler(async (req, res) => {
 		res.status(400);
 		throw new Error('User already exists');
 	}
+
+	if (userName.length < 3) {
+		res.status(400);
+		throw new Error('User name should of atleast 3 charecters');
+	}
 	const user = User.create({
 		userName,
 		email,
@@ -67,6 +72,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
 	let user = await User.findById(req.params.id);
+
+	if (req.body.userName < 3) {
+		res.status(400);
+		throw new Error('User name should of atleast 3 charecters');
+	}
 
 	if (user) {
 		user.userName = req.body.userName || user.userName;

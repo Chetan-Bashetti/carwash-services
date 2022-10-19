@@ -10,6 +10,7 @@ const getUserName = (services, users) => {
 			updatedAt: eachService.updatedAt,
 			__v: eachService.__v,
 			selectedServices: eachService.selectedServices,
+			user_id: eachService.user_id,
 			attendeeName: getName(users, eachService.user_id)
 		};
 	});

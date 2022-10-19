@@ -12,17 +12,15 @@ const serviceSchema = new Schema(
 		ownerName: {
 			type: String,
 			required: true,
-			minlength: 3
+			minlength: 2
 		},
 		carNumber: {
 			type: String,
 			required: true,
-			minlength: 3
+			minlength: 10
 		},
 		phone: {
-			type: String,
-			required: true,
-			minlength: 10
+			type: String
 		},
 		selectedServices: {
 			type: [
